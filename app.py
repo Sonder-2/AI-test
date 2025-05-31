@@ -45,14 +45,45 @@ MAX_FILE_SIZE = 5 * 1024 * 1024
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
 st.title("👵 長者友善標籤小幫手")
-st.write("上傳商品標籤圖片，我們會幫你解讀成分內容，並提供語音播放。")
+st.markdown("""
+**上傳商品標籤圖片，我們會幫你解讀成分內容，並提供語音播放。**
 
-# 使用者選項
-mode = st.radio("請選擇顯示模式：", ["簡易模式（僅總結）", "進階模式（完整解讀）"])
-speech_speed = st.radio("請選擇語音播放速度：", ["正常語速", "慢速播放"])
-font_size_choice = st.radio("請選擇字體大小：", ["小", "中", "大"], index=1)
+⚠️ **提醒**  
+由於目前使用的 API 額度較低，若同時有多人使用或使用過於頻繁，可能會遇到額度限制（Error 429）。如果出現錯誤，請稍後再試～
+""")
 
-# 對應字級大小設定
+st.markdown("""
+<div style="padding:20px; border-radius:5px;">
+  <p>📌 <b>使用流程說明：</b></p>
+  <div style="background-color:#E94707; color:white;padding:10px; border-radius:5px; margin-top:5px;">
+    1️⃣ 選擇介面字體大小與模式
+  </div>
+  <div style="background-color:#FFB405; color:white;padding:10px; border-radius:5px;margin-top:5px;">
+    2️⃣ 上傳清晰的商品標籤圖片
+  </div>
+  <div style="background-color:#9BB300; color:white;padding:10px; border-radius:5px;margin-top:5px;">
+    3️⃣ 查看解讀結果並收聽語音朗讀
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+
+# 加上框起來的文字
+st.markdown("""
+<div style="background-color:#E94707; color:white; padding:10px; border-radius:5px; text-align:center;">
+<b>步驟1-1：請選擇介面整體字體大小</b>
+</div>
+""", unsafe_allow_html=True)
+
+font_size_choice = st.radio(
+    "",
+    ["小", "中", "大"],
+    index=1,
+    horizontal=True
+)
+st.markdown(f"目前選擇的介面字體大小為：**{font_size_choice}**")
 font_size_map = {
     "小": "16px",
     "中": "20px",
@@ -60,9 +91,52 @@ font_size_map = {
 }
 chosen_font_size = font_size_map[font_size_choice]
 
+# 💡 使用全域 CSS 調整整個 app 的字體大小
+st.markdown(
+    f"""
+    <style>
+    html, body, [class*="css"]  {{
+        font-size: {chosen_font_size} !important;
+        line-height: 1.6;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# 使用者選項
+st.markdown("""
+<div style="background-color:#E94707; color:white;padding:10px; border-radius:5px; text-align:center;">
+<b>步驟1-2：請選擇顯示模式</b>
+</div>
+""", unsafe_allow_html=True)
+mode = st.radio(" ", ["簡易模式（僅總結）", "進階模式（完整解讀）"])
+st.markdown("""
+<div style="background-color:#E94707; color:white;padding:10px; border-radius:5px;text-align:center;">
+<b>步驟1-3：請選擇語音播放速度</b>
+</div>
+""", unsafe_allow_html=True)
+speech_speed = st.radio("", ["正常語速", "慢速播放"])
+
+
 
 # 上傳圖片（多圖支援）
+st.markdown("""
+<div style="background-color:#FFB405; color:white;padding:10px; border-radius:5px;text-align:center;">
+<b>步驟2：請上傳商品標籤圖片</b>
+</div>
+""", unsafe_allow_html=True)
 uploaded_files = st.file_uploader("請上傳商品標籤圖片（可多張，jpg/png，5MB 內）", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+st.markdown("""
+📝 <span style="color:#ff4b4b;"><b>圖片上傳提示：</b></span>  
+- 建議拍攝清晰、光線充足的圖片  
+- 避免反光或模糊，以確保更好的辨識效果
+""", unsafe_allow_html=True)
+st.markdown("""
+<div style="background-color:#9BB300; color:white;padding:10px; border-radius:5px;text-align:center;">
+<b>步驟3：請查看解讀結果</b>
+</div>
+""", unsafe_allow_html=True)
 
 if uploaded_files:
     for uploaded_file in uploaded_files:
@@ -148,7 +222,9 @@ if uploaded_files:
                     return text
 
                 highlighted_summary = highlight_ingredients(summary, ingredient_info)
+               
 
+                
                 # 顯示內容（根據模式）
                 st.subheader("📝 成分說明")
                 if mode == "進階模式（完整解讀）":
@@ -278,6 +354,10 @@ if uploaded_files:
                 st.error(f"✅ 成功回傳但解析失敗：{e}")
 
         else:
+            if response.status_code == 429:
+                st.error("⚠️ 由於目前使用的API為免費版本，若同時有多人使用或使用過於頻繁，可能會遇到額度限制（Error 429）。如果出現錯誤，請稍後再試～")
+            else:
+                st.error(f"❌ 請求錯誤（{response.status_code}）")
             try:
                 err = response.json()
             except Exception:
