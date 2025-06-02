@@ -73,17 +73,21 @@ st.markdown("""
 # 加上框起來的文字
 st.markdown("""
 <div style="background-color:#E94707; color:white; padding:10px; border-radius:5px; text-align:center;">
-<b>步驟1-1：請選擇介面整體字體大小</b>
+<b>步驟1：請選擇介面整體字體大小和模式</b>
 </div>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<div style="padding:0 px; border-radius:0 px">
+<b>請選擇介面字體大小</b>
+</div>""", unsafe_allow_html=True)
+
 font_size_choice = st.radio(
-    "",
-    ["小", "中", "大"],
+    "", ["小", "中", "大"],
     index=1,
     horizontal=True
 )
-st.markdown(f"目前選擇的介面字體大小為：**{font_size_choice}**")
+st.markdown(f"目前介面字體大小為：**{font_size_choice}**")
 font_size_map = {
     "小": "16px",
     "中": "20px",
@@ -106,17 +110,20 @@ st.markdown(
 
 # 使用者選項
 st.markdown("""
-<div style="background-color:#E94707; color:white;padding:10px; border-radius:5px; text-align:center;">
-<b>步驟1-2：請選擇顯示模式</b>
+<div style="padding:0 px; border-radius:0 px">
+<b>請選擇顯示模式</b>
 </div>
 """, unsafe_allow_html=True)
-mode = st.radio(" ", ["簡易模式（僅總結）", "進階模式（完整解讀）"])
+
+mode = st.radio("", ["簡易模式（僅總結）", "進階模式（完整解讀）"],index=1,
+    horizontal=True)
 st.markdown("""
-<div style="background-color:#E94707; color:white;padding:10px; border-radius:5px;text-align:center;">
-<b>步驟1-3：請選擇語音播放速度</b>
+<div style="padding:0 px; border-radius:0 px">
+<b>請選擇語音播放速度</b>
 </div>
 """, unsafe_allow_html=True)
-speech_speed = st.radio("", ["正常語速", "慢速播放"])
+speech_speed = st.radio(" ", ["正常語速", "慢速播放"],index=1,
+    horizontal=True)
 
 
 
